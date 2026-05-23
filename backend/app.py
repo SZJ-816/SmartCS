@@ -217,16 +217,57 @@ def batch_knowledge():
 
 # === AI Chat APIs ===
 def ai_match_answer(tenant_id, question):
+    # 1. Exact question match
     rows = db_execute(
         "SELECT * FROM knowledge WHERE tenant_id=%s AND status=1 AND question LIKE %s LIMIT 5",
         (tenant_id, f"%{question}%"))
     if rows:
         db_execute("UPDATE knowledge SET view_count=view_count+1 WHERE id=%s", (rows[0]["id"],), fetch=False)
         return rows[0]["answer"]
-    rows = db_execute(
-        "SELECT * FROM knowledge WHERE tenant_id=%s AND status=1 AND keywords LIKE %s LIMIT 3",
-        (tenant_id, f"%{question}%"))
-    if rows: return rows[0]["answer"]
+
+    # 2. Keyword split match - extract key chars from question
+    stop_words = set(list('\u7684\u4e86\u5417\u5462\u554a\u5427\u662f\u5728\u6709\u548c\u4e0e\u5417\u5427\u5462\u554a\u5417\u4e0d\u4e00\u4e2a\u8fd9\u4e2a\u90a3\u4e2a\u4ec0\u4e48\u600e\u4e48\u5982\u4f55\u80fd\u53ef\u4ee5\u8bf7\u95ee\u60f3\u8981\u8bf4\u544a\u8bc9\u77e5\u9053') + ['the','a','an','is','are','was','were','do','does','did','how','what','where','when','can','could','would','should','i','you','we','my','your','our','it','to','of','in','on','at','for','and','or','but'])
+    chars = [c for c in question if c.strip() and c not in stop_words]
+    chars = list(set(chars))
+    if len(chars) >= 2:
+        like_clause = '%(' + ')s AND keywords LIKE %('.join([f'%{c}%' for c in chars[:4]]) + ')s'
+        params = [tenant_id] + chars[:4]
+        rows = db_execute(
+            "SELECT * FROM knowledge WHERE tenant_id=%s AND status=1 AND keywords LIKE " + ' AND keywords LIKE '.join(['%s'] * min(len(chars), 4)) + " LIMIT 3",
+            tuple(params))
+        if rows:
+            db_execute("UPDATE knowledge SET view_count=view_count+1 WHERE id=%s", (rows[0]["id"],), fetch=False)
+            return rows[0]["answer"]
+
+    # 3. Any single keyword char match
+    if len(chars) >= 1:
+        for c in chars[:6]:
+            rows = db_execute(
+                "SELECT * FROM knowledge WHERE tenant_id=%s AND status=1 AND (keywords LIKE %s OR question LIKE %s) LIMIT 1",
+                (tenant_id, f'%{c}%', f'%{c}%'))
+            if rows:
+                db_execute("UPDATE knowledge SET view_count=view_count+1 WHERE id=%s", (rows[0]["id"],), fetch=False)
+                return rows[0]["answer"]
+
+    # 4. Fuzzy: split question into 2-char segments
+    segments = [question[i:i+2] for i in range(len(question)-1) if len(question[i:i+2].strip()) == 2]
+    best_match = None
+    best_score = 0
+    all_rows = db_execute("SELECT * FROM knowledge WHERE tenant_id=%s AND status=1", (tenant_id,))
+    if all_rows:
+        for row in all_rows:
+            score = 0
+            combined = (row.get('question','') + ' ' + row.get('keywords','') + ' ' + row.get('answer','')).lower()
+            for seg in segments:
+                if seg in combined:
+                    score += 1
+            if score > best_score:
+                best_score = score
+                best_match = row
+        if best_match and best_score >= 2:
+            db_execute("UPDATE knowledge SET view_count=view_count+1 WHERE id=%s", (best_match["id"],), fetch=False)
+            return best_match["answer"]
+
     return "sorry, I cannot find an answer to your question. Please try another way of asking or contact our support."
 
 @app.route("/api/chat/send", methods=["POST"])
