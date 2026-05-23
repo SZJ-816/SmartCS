@@ -94,7 +94,6 @@ body{font-family:var(--font);color:var(--on-surface);background:var(--surface);l
 .price-card{border:1px solid var(--outline-variant);border-radius:var(--radius-xl);padding:40px;transition:all var(--transition);position:relative;background:var(--surface)}
 .price-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
 .price-card.featured{border-color:var(--primary);box-shadow:0 4px 24px rgba(103,80,164,0.15)}
-.price-card.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--tertiary));border-radius:var(--radius-xl) var(--radius-xl) 0 0}
 .price-card .tag{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:block}
 .price-card .price{font-size:52px;font-weight:800;letter-spacing:-0.02em;color:var(--on-surface);margin:16px 0}
 .price-card .price small{font-size:16px;font-weight:400;color:var(--on-surface-variant);vertical-align:super}
