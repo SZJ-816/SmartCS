@@ -1,66 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Create Account - SmartCS</title>
-<link rel="stylesheet" href="/static/luxury.css">
-<style>body{background:var(--gray-50)}
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-.auth-card{background:var(--white);border:1px solid var(--gray-200);width:100%;max-width:440px;padding:56px 48px}
-.auth-logo{font-size:16px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:40px}
-.auth-logo a{color:var(--black);text-decoration:none}
-.auth-title{font-size:24px;font-weight:600;margin-bottom:8px}
-.auth-sub{font-size:14px;color:var(--gray-500);margin-bottom:40px}
-.auth-link{font-size:13px;color:var(--gray-500);text-align:center;margin-top:32px}
-.auth-link a{color:var(--black);font-weight:500;text-decoration:none}
-.auth-link a:hover{text-decoration:underline}
-.lang-bar{text-align:right;margin-bottom:16px}
-.lang-bar a{font-size:11px;color:var(--gray-400);text-decoration:none;margin-left:12px;letter-spacing:0.06em;text-transform:uppercase}
-.lang-bar a.active{color:var(--black);font-weight:600}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCS - Create Account</title>
+    <link rel="stylesheet" href="/static/luxury.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #F3EDF7 0%, #E8DEF8 50%, #F3EDF7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-page {
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+        }
+        .auth-card {
+            background: var(--surface, #FFFBFE);
+            border-radius: var(--radius-xl, 28px);
+            padding: 40px 32px 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .logo-area svg { flex-shrink: 0; }
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary, #6750A4);
+            letter-spacing: -0.5px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--on-surface, #1C1B1F);
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: var(--on-surface-variant, #49454F);
+            margin-bottom: 28px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--on-surface-variant, #49454F);
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            height: 48px;
+            padding: 0 16px;
+            font-size: 15px;
+            color: var(--on-surface, #1C1B1F);
+            background: transparent;
+            border: 1.5px solid var(--outline-variant, #CAC4D0);
+            border-radius: var(--radius-md, 12px);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--primary, #6750A4);
+            box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.12);
+        }
+        .form-input::placeholder { color: var(--outline-variant, #CAC4D0); }
+        .form-hint {
+            font-size: 12px;
+            color: var(--on-surface-variant, #49454F);
+            margin-top: 4px;
+        }
+        .msg-box {
+            display: none;
+            padding: 12px 16px;
+            border-radius: var(--radius-md, 12px);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .msg-error {
+            display: block;
+            background: #F9DEDC;
+            color: #8C1D18;
+        }
+        .msg-success {
+            display: block;
+            background: #D4EDDA;
+            color: #155724;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 48px;
+            padding: 0 24px;
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius-full, 9999px);
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
+            text-decoration: none;
+        }
+        .btn:active { opacity: 0.85; }
+        .btn-primary {
+            background: var(--primary, #6750A4);
+            color: #FFFFFF;
+        }
+        .btn-primary:hover { box-shadow: 0 1px 3px rgba(103, 80, 164, 0.3), 0 4px 8px rgba(103, 80, 164, 0.15); }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary, #6750A4);
+            border: 1.5px solid var(--outline-variant, #CAC4D0);
+        }
+        .btn-outline:hover { background: rgba(103, 80, 164, 0.06); }
+        .btn-tonal {
+            background: var(--primary-light, #E8DEF8);
+            color: var(--primary, #6750A4);
+        }
+        .btn-tonal:hover { box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .btn-sm { height: 36px; padding: 0 16px; font-size: 13px; }
+        .btn-lg { height: 56px; padding: 0 32px; font-size: 16px; }
+        .alt-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--on-surface-variant, #49454F);
+        }
+        .alt-link a {
+            color: var(--primary, #6750A4);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .alt-link a:hover { text-decoration: underline; }
+        .lang-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--outline-variant, #CAC4D0);
+        }
+        .lang-btn {
+            min-width: 44px;
+            height: 36px;
+            padding: 0 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid var(--outline-variant, #CAC4D0);
+            border-radius: var(--radius-full, 9999px);
+            background: transparent;
+            color: var(--on-surface-variant, #49454F);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .lang-btn:hover { background: rgba(103, 80, 164, 0.06); }
+        .lang-btn.active {
+            background: var(--primary-light, #E8DEF8);
+            color: var(--primary, #6750A4);
+            border-color: var(--primary-light, #E8DEF8);
+        }
+    </style>
 </head>
 <body>
-<div class="auth-wrap">
-  <div class="auth-card">
-    <div class="lang-bar">
-      <a href="/register?lang=en" class="active">EN</a>
-      <a href="/register?lang=zh" class="">&#20013;&#25991;</a>
+    <div class="auth-page">
+        <div class="auth-card">
+            <div class="logo-area">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="12" fill="#6750A4"/>
+                    <path d="M12 20.5L17.5 26L28 15" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="logo-text">SmartCS</span>
+            </div>
+
+            <h1>Create Account</h1>
+            <p class="subtitle">Start your free trial</p>
+
+            <form id="registerForm" action="/api/auth/register" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="company">Company Name</label>
+                    <input class="form-input" type="text" id="company" name="company" autocomplete="organization" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input class="form-input" type="text" id="username" name="username" autocomplete="username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input class="form-input" type="password" id="password" name="password" autocomplete="new-password" required>
+                </div>
+                <div class="msg-box msg-error" id="msg"></div>
+                <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;">Create Account</button>
+            </form>
+
+            <p class="alt-link">Already have an account? <a href="/login?lang=en">Sign In</a></p>
+
+            <div class="lang-toggle">
+                <button class="lang-btn active" onclick="switchLang('en')">EN</button>
+                <button class="lang-btn" onclick="switchLang('zh')">ZH</button>
+            </div>
+        </div>
     </div>
-    <div class="auth-logo"><a href="/?lang=en">SmartCS</a></div>
-    <h1 class="auth-title">Create Account</h1>
-    <p class="auth-sub">Start your AI customer service journey</p>
-    <div class="msg-box msg-error" id="errorMsg"></div>
-    <div class="msg-box msg-success" id="successMsg"></div>
-    <form onsubmit="return false;">
-      <div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company" placeholder="Acme Corporation"></div>
-      <div class="form-group"><label class="form-label">Company Code</label><input type="text" class="form-input" id="code" placeholder="acme" style="text-transform:lowercase"><div class="form-hint">Lowercase letters and numbers only. Used for widget integration.</div></div>
-      <div class="form-group"><label class="form-label">Admin Username</label><input type="text" class="form-input" id="username" placeholder="admin"></div>
-      <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="email" placeholder="admin@company.com"></div>
-      <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="password" placeholder="Minimum 6 characters"></div>
-      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;padding:16px" onclick="doRegister()">Create Account</button>
-    </form>
-    <div class="auth-link">Already have an account? <a href="/login?lang=en">Sign in</a></div>
-  </div>
-</div>
-<script>
-function showError(msg){var el=document.getElementById('errorMsg');el.textContent=msg;el.style.display='block';document.getElementById('successMsg').style.display='none';}
-function showSuccess(msg){var el=document.getElementById('successMsg');el.textContent=msg;el.style.display='block';document.getElementById('errorMsg').style.display='none';}
-async function doRegister(){
-  var company=document.getElementById('company').value.trim();
-  var code=document.getElementById('code').value.trim().toLowerCase();
-  var username=document.getElementById('username').value.trim();
-  var email=document.getElementById('email').value.trim();
-  var password=document.getElementById('password').value;
-  document.getElementById('errorMsg').style.display='none';
-  if(!company||!code||!username||!email||!password){showError('All fields are required');return;}
-  if(password.length<6){showError('Password must be at least 6 characters');return;}
-  if(!/^[a-z0-9]+$/.test(code)){showError('Company code must be lowercase letters and numbers only');return;}
-  try{
-    var res=await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({company,code,username,email,password})});
-    var data=await res.json();
-    if(data.code===200){showSuccess('Account created! Redirecting...');setTimeout(function(){location.href='/login?lang=en';},1500);}
-    else{showError(data.message||'Registration failed');}
-  }catch(e){showError('Network error, please try again');}
-}
-</script>
-</body></html>
+
+    <script>
+        var msgEl = document.getElementById('msg');
+
+        function switchLang(lang) {
+            if (lang === 'zh') {
+                window.location.href = '/register.zh.html';
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            msgEl.className = 'msg-box msg-error';
+            msgEl.textContent = '';
+
+            var company = document.getElementById('company').value.trim();
+            var username = document.getElementById('username').value.trim();
+            var password = document.getElementById('password').value;
+
+            if (!company || !username || !password) {
+                msgEl.className = 'msg-box msg-error';
+                msgEl.textContent = 'Please fill in all fields.';
+                return;
+            }
+
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ company: company, username: username, password: password })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    msgEl.className = 'msg-box msg-success';
+                    msgEl.textContent = 'Account created successfully. Redirecting...';
+                    setTimeout(function() {
+                        window.location.href = '/login?lang=en';
+                    }, 1500);
+                } else {
+                    msgEl.className = 'msg-box msg-error';
+                    msgEl.textContent = data.message || 'Registration failed. Please try again.';
+                }
+            })
+            .catch(function() {
+                msgEl.className = 'msg-box msg-error';
+                msgEl.textContent = 'Network error. Please try again.';
+            });
+        });
+    </script>
+</body>
+</html>
