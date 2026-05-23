@@ -63,7 +63,8 @@
                 <div class="grid-2">
                     <div class="form-group">
                         <label class="form-label">Category</label>
-                        <input type="text" class="form-input" id="faqCategory" placeholder="e.g. billing, support">
+                        <input type="text" class="form-input" id="faqCategory" placeholder="e.g. billing, support" list="categoryList">
+                        <datalist id="categoryList"></datalist>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Keywords</label>
@@ -198,7 +199,7 @@
                     '<td style="max-width:300px">' + escapeHtml(item.question || '') + '</td>' +
                     '<td><span class="badge badge-outline">' + escapeHtml(item.category || '') + '</span></td>' +
                     '<td class="text-sm text-muted">' + escapeHtml(item.keywords || '') + '</td>' +
-                    '<td>' + (item.views || 0) + '</td>' +
+                    '<td>' + (item.view_count || item.views || 0) + '</td>' +
                     '<td>' +
                         '<button class="btn btn-outline btn-sm" onclick="openEdit(' + item.id + ')" style="margin-right:8px">Edit</button>' +
                         '<button class="btn btn-outline btn-sm" onclick="deleteItem(' + item.id + ')">Delete</button>' +
@@ -210,14 +211,25 @@
 
         function updateCategoryFilter(categories) {
             var select = document.getElementById('categoryFilter');
-            if (!select) return;
-            var current = select.value;
-            var html = '<option value="">All Categories</option>';
-            for (var i = 0; i < categories.length; i++) {
-                html += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
+            var datalist = document.getElementById('categoryList');
+            var current = select ? select.value : '';
+            
+            if (select) {
+                var html = '<option value="">All Categories</option>';
+                for (var i = 0; i < categories.length; i++) {
+                    html += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
+                }
+                select.innerHTML = html;
+                select.value = current;
             }
-            select.innerHTML = html;
-            select.value = current;
+            
+            if (datalist) {
+                var dlHtml = '';
+                for (var i = 0; i < categories.length; i++) {
+                    dlHtml += '<option value="' + escapeHtml(categories[i]) + '">';
+                }
+                datalist.innerHTML = dlHtml;
+            }
         }
 
         function debounceLoad() {

@@ -235,9 +235,9 @@ def auth_info():
 @auth_required
 def list_knowledge():
     page = int(request.args.get("page", 1))
-    ps = int(request.args.get("pageSize", 20))
+    ps = int(request.args.get("pageSize", 100))
     cat = request.args.get("category", "")
-    kw = request.args.get("keyword", "")
+    kw = request.args.get("keyword", "") or request.args.get("search", "")
 
     sql = "SELECT * FROM knowledge WHERE tenant_id = %s AND status = 1"
     params = [g.tenant_id]
@@ -245,15 +245,26 @@ def list_knowledge():
         sql += " AND category = %s"
         params.append(cat)
     if kw:
-        sql += " AND (question LIKE %s OR answer LIKE %s)"
-        params.extend([f"%{kw}%", f"%{kw}%"])
+        sql += " AND (question LIKE %s OR answer LIKE %s OR keywords LIKE %s)"
+        params.extend([f"%{kw}%", f"%{kw}%", f"%{kw}%"])
 
     count_sql = sql.replace("SELECT *", "SELECT COUNT(*) as total", 1)
     total = db_fetchone(count_sql, params)["total"]
     sql += " ORDER BY id DESC LIMIT %s OFFSET %s"
     params.extend([ps, (page - 1) * ps])
     rows = [fmt_row(r) for r in db_execute(sql, params)]
-    return ok({"total": total, "page": page, "pageSize": ps, "records": rows})
+    
+    cat_rows = db_execute("SELECT DISTINCT category FROM knowledge WHERE tenant_id=%s AND status=1", (g.tenant_id,))
+    categories = [r["category"] for r in cat_rows]
+    
+    return ok({
+        "total": total,
+        "page": page,
+        "pageSize": ps,
+        "records": rows,
+        "items": rows,
+        "categories": categories
+    })
 
 @app.route("/api/knowledge/categories")
 @auth_required
