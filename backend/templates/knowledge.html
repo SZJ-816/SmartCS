@@ -80,18 +80,19 @@
     <script>
         var editingId = null;
         var searchTimer = null;
+        var allItems = [];
 
         function logout() {
             localStorage.removeItem('smartcs_token');
             localStorage.removeItem('smartcs_tenant');
             localStorage.removeItem('smartcs_user');
-            window.location.href = '/login';
+            window.location.href = '/login?lang=en';
         }
 
         async function api(path, options) {
             var token = localStorage.getItem('smartcs_token');
             if (!token) {
-                window.location.href = '/login';
+                window.location.href = '/login?lang=en';
                 return null;
             }
             var headers = { 'Authorization': 'Bearer ' + token };
@@ -100,7 +101,7 @@
             }
             var response = await fetch(path, Object.assign({}, options, { headers: headers }));
             if (response.status === 401) {
-                window.location.href = '/login';
+                window.location.href = '/login?lang=en';
                 return null;
             }
             return response;
@@ -109,7 +110,7 @@
         async function init() {
             var token = localStorage.getItem('smartcs_token');
             if (!token) {
-                window.location.href = '/login';
+                window.location.href = '/login?lang=en';
                 return;
             }
             renderShell();
@@ -167,6 +168,7 @@
                 if (!res) return;
                 var data = await res.json();
                 var items = data.items || data || [];
+                allItems = items;
                 renderTable(items);
                 updateCategoryFilter(data.categories || []);
             } catch (e) {
@@ -236,18 +238,10 @@
         }
 
         function openEdit(id) {
-            var rows = document.getElementById('tableBody').querySelectorAll('tr');
             var item = null;
-            for (var i = 0; i < rows.length; i++) {
-                var btn = rows[i].querySelector('button');
-                if (btn && btn.getAttribute('onclick').indexOf(id) > -1) {
-                    var cells = rows[i].querySelectorAll('td');
-                    item = {
-                        id: id,
-                        question: cells[0].textContent,
-                        category: cells[1].textContent,
-                        keywords: cells[2].textContent,
-                    };
+            for (var i = 0; i < allItems.length; i++) {
+                if (allItems[i].id == id) {
+                    item = allItems[i];
                     break;
                 }
             }
@@ -259,10 +253,10 @@
 
             editingId = id;
             document.getElementById('modalTitle').textContent = 'Edit FAQ';
-            document.getElementById('faqQuestion').value = item.question;
-            document.getElementById('faqAnswer').value = '';
-            document.getElementById('faqCategory').value = item.category;
-            document.getElementById('faqKeywords').value = item.keywords;
+            document.getElementById('faqQuestion').value = item.question || '';
+            document.getElementById('faqAnswer').value = item.answer || '';
+            document.getElementById('faqCategory').value = item.category || '';
+            document.getElementById('faqKeywords').value = item.keywords || '';
             document.getElementById('faqModal').classList.add('open');
         }
 

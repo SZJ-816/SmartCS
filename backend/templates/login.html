@@ -191,6 +191,10 @@
 
             <form id="loginForm" action="/api/auth/login" method="POST">
                 <div class="form-group">
+                    <label class="form-label" for="code">Company Code</label>
+                    <input class="form-input" type="text" id="code" name="code" autocomplete="organization" placeholder="e.g. mycompany" required>
+                </div>
+                <div class="form-group">
                     <label class="form-label" for="username">Username</label>
                     <input class="form-input" type="text" id="username" name="username" autocomplete="username" required>
                 </div>
@@ -216,7 +220,7 @@
 
         function switchLang(lang) {
             if (lang === 'zh') {
-                window.location.href = '/login.zh.html';
+                window.location.href = '/login?lang=zh';
             }
         }
 
@@ -225,10 +229,11 @@
             msgEl.className = 'msg-box msg-error';
             msgEl.textContent = '';
 
+            var code = document.getElementById('code').value.trim();
             var username = document.getElementById('username').value.trim();
             var password = document.getElementById('password').value;
 
-            if (!username || !password) {
+            if (!code || !username || !password) {
                 msgEl.className = 'msg-box msg-error';
                 msgEl.textContent = 'Please fill in all fields.';
                 return;
@@ -237,12 +242,14 @@
             fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, password: password })
+                body: JSON.stringify({ code: code, username: username, password: password })
             })
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 if (data.token) {
-                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('smartcs_token', data.token);
+                    localStorage.setItem('smartcs_tenant', JSON.stringify(data.tenant));
+                    localStorage.setItem('smartcs_user', JSON.stringify(data.user));
                     window.location.href = '/dashboard?lang=en';
                 } else {
                     msgEl.className = 'msg-box msg-error';

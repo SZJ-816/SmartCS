@@ -38,24 +38,26 @@ d.head.appendChild(style);
 var wrap=d.createElement('div');wrap.className='scs-w';
 wrap.innerHTML='<button class="scs-btn" id="scsBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h18v12H12L7 21v-4H3V5z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="13" x2="13" y2="13"/></svg></button>';
 var panel=d.createElement('div');panel.className='scs-panel';
-panel.innerHTML='<div class="scs-hdr"><h4><svg viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="6" fill="rgba(255,255,255,.2)"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>SmartCS</h4><button id="scsX">&times;</button></div><div class="scs-body" id="scsBody"><div class="scs-msg bot">'+t.hello+'<span class="t">now</span></div></div><div class="scs-ft"><input type="text" id="scsInput" placeholder="'+t.placeholder+'"><button id="scsSend">'+t.send+'</button></div>';
+var initTime=new Date(),ih=(initTime.getHours()<10?'0':'')+initTime.getHours()+':'+(initTime.getMinutes()<10?'0':'')+initTime.getMinutes();
+panel.innerHTML='<div class="scs-hdr"><h4><svg viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="6" fill="rgba(255,255,255,.2)"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>SmartCS</h4><button id="scsX">&times;</button></div><div class="scs-body" id="scsBody"><div class="scs-msg bot">'+t.hello+'<span class="t">'+ih+'</span></div></div><div class="scs-ft"><input type="text" id="scsInput" placeholder="'+t.placeholder+'"><button id="scsSend">'+t.send+'</button></div>';
 wrap.appendChild(panel);d.body.appendChild(wrap);
 var convId=null;
+function esc(s){var e=d.createElement('div');e.textContent=s;return e.innerHTML;}
+function now(){var n=new Date(),h=n.getHours(),m=n.getMinutes();return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;}
+function addMsg(type,text){var body=document.getElementById('scsBody');var div=d.createElement('div');div.className='scs-msg '+type;div.innerHTML=esc(text)+'<span class="t">'+now()+'</span>';body.appendChild(div);body.scrollTop=body.scrollHeight;}
 document.getElementById('scsBtn').onclick=function(){panel.classList.toggle('open')};
 document.getElementById('scsX').onclick=function(){panel.classList.remove('open')};
 function sendMsg(){
 var input=document.getElementById('scsInput'),msg=input.value.trim();
 if(!msg)return;
-var body=document.getElementById('scsBody');
-body.innerHTML+='<div class="scs-msg visitor">'+msg.replace(/</g,'&lt;')+'<span class="t">now</span></div>';
-input.value='';body.scrollTop=body.scrollHeight;
-var typing=d.createElement('div');typing.className='scs-typing';typing.innerHTML='<span>.</span><span>.</span><span>.</span>';body.appendChild(typing);body.scrollTop=body.scrollHeight;
+addMsg('visitor',msg);
+input.value='';
+var typing=d.createElement('div');typing.className='scs-typing';typing.innerHTML='<span>.</span><span>.</span><span>.</span>';document.getElementById('scsBody').appendChild(typing);document.getElementById('scsBody').scrollTop=document.getElementById('scsBody').scrollHeight;
 fetch(base+'/api/chat/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tenant_code:tenant,visitor_id:vid,message:msg,conversation_id:convId})}).then(function(r){return r.json()}).then(function(data){
 typing.remove();
-if(data.code===200){convId=data.data.conversation_id;body.innerHTML+='<div class="scs-msg bot">'+data.data.reply.replace(/</g,'&lt;')+'<span class="t">now</span></div>';}
-else{body.innerHTML+='<div class="scs-msg bot">'+t.sorry+'<span class="t">now</span></div>';}
-body.scrollTop=body.scrollHeight;
-}).catch(function(){typing.remove();body.innerHTML+='<div class="scs-msg bot">'+t.error+'<span class="t">now</span></div>';body.scrollTop=body.scrollHeight;});
+if(data.code===200){convId=data.data.conversation_id;addMsg('bot',data.data.reply);}
+else{addMsg('bot',t.sorry);}
+}).catch(function(){typing.remove();addMsg('bot',t.error);});
 }
 document.getElementById('scsSend').onclick=sendMsg;
 document.getElementById('scsInput').onkeydown=function(e){if(e.key==='Enter')sendMsg()};

@@ -48,13 +48,13 @@
             localStorage.removeItem('smartcs_token');
             localStorage.removeItem('smartcs_tenant');
             localStorage.removeItem('smartcs_user');
-            window.location.href = '/login';
+            window.location.href = '/login?lang=en';
         }
 
         async function api(path, options) {
             var token = localStorage.getItem('smartcs_token');
             if (!token) {
-                window.location.href = '/login';
+                window.location.href = '/login?lang=en';
                 return null;
             }
             var headers = { 'Authorization': 'Bearer ' + token };
@@ -63,7 +63,7 @@
             }
             var response = await fetch(path, Object.assign({}, options, { headers: headers }));
             if (response.status === 401) {
-                window.location.href = '/login';
+                window.location.href = '/login?lang=en';
                 return null;
             }
             return response;
@@ -72,7 +72,7 @@
         async function init() {
             var token = localStorage.getItem('smartcs_token');
             if (!token) {
-                window.location.href = '/login';
+                window.location.href = '/login?lang=en';
                 return;
             }
             var tenant = localStorage.getItem('smartcs_tenant');

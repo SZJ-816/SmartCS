@@ -1,2 +1,8 @@
 flask
 pymysql
+bcrypt
+PyJWT
+gunicorn
+flask-limiter
+python-dotenv
+DBUtils
