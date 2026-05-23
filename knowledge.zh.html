@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCS - 知识库</title>
+    <link rel="stylesheet" href="/static/luxury.css">
+</head>
+<body>
+    <div class="sidebar-dark">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 36 36" width="36" height="36">
+                <rect width="36" height="36" rx="10" fill="#6750A4"/>
+                <path d="M10 18l6 6 10-12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>SmartCS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/dashboard?lang=zh" class="sidebar-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                控制面板
+            </a>
+            <a href="/knowledge?lang=zh" class="sidebar-link active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                知识库
+            </a>
+            <a href="/agent?lang=zh" class="sidebar-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                坐席对话
+            </a>
+            <a href="/pricing?lang=zh" class="sidebar-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                订阅
+            </a>
+            <a href="javascript:void(0)" class="sidebar-link" onclick="logout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                退出登录
+            </a>
+        </nav>
+    </div>
+    <div class="page-body">
+        <div class="main-content" id="mainContent">
+            <p class="loading">Loading...</p>
+        </div>
+    </div>
+    <div class="modal-overlay" id="faqModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="display-sm" id="modalTitle">添加问答</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">问题</label>
+                    <input type="text" class="form-input" id="faqQuestion" placeholder="输入访客可能提出的问题">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">回答</label>
+                    <textarea class="form-input" id="faqAnswer" rows="4" placeholder="输入AI回复内容"></textarea>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">分类</label>
+                        <input type="text" class="form-input" id="faqCategory" placeholder="如：账单、售后">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">关键词</label>
+                        <input type="text" class="form-input" id="faqKeywords" placeholder="逗号分隔">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline btn-sm" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary btn-sm" onclick="saveItem()">保存</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var editingId = null;
+        var searchTimer = null;
+        var allItems = [];
+
+        function logout() {
+            localStorage.removeItem('smartcs_token');
+            localStorage.removeItem('smartcs_tenant');
+            localStorage.removeItem('smartcs_user');
+            window.location.href = '/login?lang=zh';
+        }
+
+        async function api(path, options) {
+            var token = localStorage.getItem('smartcs_token');
+            if (!token) {
+                window.location.href = '/login?lang=zh';
+                return null;
+            }
+            var headers = { 'Authorization': 'Bearer ' + token };
+            if (options && options.headers) {
+                Object.assign(headers, options.headers);
+            }
+            var response = await fetch(path, Object.assign({}, options, { headers: headers }));
+            if (response.status === 401) {
+                window.location.href = '/login?lang=zh';
+                return null;
+            }
+            return response;
+        }
+
+        async function init() {
+            var token = localStorage.getItem('smartcs_token');
+            if (!token) {
+                window.location.href = '/login?lang=zh';
+                return;
+            }
+            renderShell();
+            await loadData();
+        }
+
+        function renderShell() {
+            var mc = document.getElementById('mainContent');
+            mc.innerHTML =
+                '<div class="page-header">' +
+                    '<h1 class="page-title">知识库</h1>' +
+                    '<button class="btn btn-primary btn-sm" onclick="openAdd()">添加问答</button>' +
+                '</div>' +
+                '<div class="toolbar">' +
+                    '<div class="search-wrap">' +
+                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+                        '<input type="text" class="form-input" id="searchInput" placeholder="搜索问题或答案..." oninput="debounceLoad()">' +
+                    '</div>' +
+                    '<select class="form-input" id="categoryFilter" onchange="loadData()" style="max-width:200px">' +
+                        '<option value="">全部分类</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="content-card" style="padding:0;overflow:hidden">' +
+                    '<div class="table-wrap">' +
+                        '<table class="table" id="knowledgeTable">' +
+                            '<thead>' +
+                                '<tr>' +
+                                    '<th>问题</th>' +
+                                    '<th>分类</th>' +
+                                    '<th>关键词</th>' +
+                                    '<th>浏览</th>' +
+                                    '<th>操作</th>' +
+                                '</tr>' +
+                            '</thead>' +
+                            '<tbody id="tableBody"></tbody>' +
+                        '</table>' +
+                    '</div>' +
+                    '<div id="emptyState" style="display:none;text-align:center;padding:60px 24px">' +
+                        '<p class="display-sm" style="margin-bottom:8px;color:var(--on-surface-variant)">暂无知识条目</p>' +
+                        '<p class="text-sm text-muted">添加第一条FAQ开始训练AI</p>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        async function loadData() {
+            var search = document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
+            var category = document.getElementById('categoryFilter') ? document.getElementById('categoryFilter').value : '';
+            var params = new URLSearchParams();
+            if (search) params.set('search', search);
+            if (category) params.set('category', category);
+            var query = params.toString() ? '?' + params.toString() : '';
+
+            try {
+                var res = await api('/api/knowledge' + query);
+                if (!res) return;
+                var data = await res.json();
+                var items = data.items || data || [];
+                allItems = items;
+                renderTable(items);
+                updateCategoryFilter(data.categories || []);
+            } catch (e) {
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="text-muted" style="text-align:center;padding:24px">加载知识条目失败。</td></tr>';
+            }
+        }
+
+        function renderTable(items) {
+            var tbody = document.getElementById('tableBody');
+            var emptyState = document.getElementById('emptyState');
+            var table = document.getElementById('knowledgeTable');
+
+            if (!items || items.length === 0) {
+                tbody.innerHTML = '';
+                table.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            table.style.display = '';
+            emptyState.style.display = 'none';
+
+            var html = '';
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                html += '<tr>' +
+                    '<td style="max-width:300px">' + escapeHtml(item.question || '') + '</td>' +
+                    '<td><span class="badge badge-outline">' + escapeHtml(item.category || '') + '</span></td>' +
+                    '<td class="text-sm text-muted">' + escapeHtml(item.keywords || '') + '</td>' +
+                    '<td>' + (item.views || 0) + '</td>' +
+                    '<td>' +
+                        '<button class="btn btn-outline btn-sm" onclick="openEdit(' + item.id + ')" style="margin-right:8px">编辑</button>' +
+                        '<button class="btn btn-outline btn-sm" onclick="deleteItem(' + item.id + ')">删除</button>' +
+                    '</td>' +
+                '</tr>';
+            }
+            tbody.innerHTML = html;
+        }
+
+        function updateCategoryFilter(categories) {
+            var select = document.getElementById('categoryFilter');
+            if (!select) return;
+            var current = select.value;
+            var html = '<option value="">全部分类</option>';
+            for (var i = 0; i < categories.length; i++) {
+                html += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
+            }
+            select.innerHTML = html;
+            select.value = current;
+        }
+
+        function debounceLoad() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() {
+                loadData();
+            }, 300);
+        }
+
+        function openAdd() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = '添加问答';
+            document.getElementById('faqQuestion').value = '';
+            document.getElementById('faqAnswer').value = '';
+            document.getElementById('faqCategory').value = '';
+            document.getElementById('faqKeywords').value = '';
+            document.getElementById('faqModal').classList.add('open');
+        }
+
+        function openEdit(id) {
+            var item = null;
+            for (var i = 0; i < allItems.length; i++) {
+                if (allItems[i].id == id) {
+                    item = allItems[i];
+                    break;
+                }
+            }
+
+            if (!item) {
+                fetchAndOpenEdit(id);
+                return;
+            }
+
+            editingId = id;
+            document.getElementById('modalTitle').textContent = '编辑问答';
+            document.getElementById('faqQuestion').value = item.question || '';
+            document.getElementById('faqAnswer').value = item.answer || '';
+            document.getElementById('faqCategory').value = item.category || '';
+            document.getElementById('faqKeywords').value = item.keywords || '';
+            document.getElementById('faqModal').classList.add('open');
+        }
+
+        async function fetchAndOpenEdit(id) {
+            try {
+                var res = await api('/api/knowledge/' + id);
+                if (!res) return;
+                var item = await res.json();
+                editingId = id;
+                document.getElementById('modalTitle').textContent = '编辑问答';
+                document.getElementById('faqQuestion').value = item.question || '';
+                document.getElementById('faqAnswer').value = item.answer || '';
+                document.getElementById('faqCategory').value = item.category || '';
+                document.getElementById('faqKeywords').value = item.keywords || '';
+                document.getElementById('faqModal').classList.add('open');
+            } catch (e) {}
+        }
+
+        function closeModal() {
+            document.getElementById('faqModal').classList.remove('open');
+            editingId = null;
+        }
+
+        async function saveItem() {
+            var question = document.getElementById('faqQuestion').value.trim();
+            var answer = document.getElementById('faqAnswer').value.trim();
+            var category = document.getElementById('faqCategory').value.trim();
+            var keywords = document.getElementById('faqKeywords').value.trim();
+
+            if (!question || !answer) return;
+
+            var body = JSON.stringify({ question: question, answer: answer, category: category, keywords: keywords });
+            var options = {
+                method: editingId ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: body
+            };
+
+            try {
+                var url = editingId ? '/api/knowledge/' + editingId : '/api/knowledge';
+                var res = await api(url, options);
+                if (!res) return;
+                closeModal();
+                await loadData();
+            } catch (e) {}
+        }
+
+        async function deleteItem(id) {
+            if (!confirm('确定要删除此条目吗？')) return;
+            try {
+                var res = await api('/api/knowledge/' + id, { method: 'DELETE' });
+                if (!res) return;
+                await loadData();
+            } catch (e) {}
+        }
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        init();
+    </script>
+</body>
+</html>

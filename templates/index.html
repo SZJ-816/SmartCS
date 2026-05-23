@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SmartCS - AI Customer Service Platform</title>
+<link rel="stylesheet" href="/static/luxury.css">
+<style>
+.hero-visual-wrap{position:relative;margin-top:60px;border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-xl);border:1px solid var(--outline-variant);background:var(--surface);padding:40px;min-height:200px}
+.hero-visual-wrap .mock-chat{max-width:420px;margin:0 auto}
+.mock-msg{display:flex;margin-bottom:12px;gap:8px;align-items:flex-start}
+.mock-msg.bot .mock-avatar{width:32px;height:32px;border-radius:var(--radius-full);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mock-msg.bot .mock-avatar svg{width:16px;height:16px;color:var(--primary)}
+.mock-msg.bot .mock-bubble{background:var(--surface-container-low);border:1px solid var(--outline-variant);border-radius:var(--radius-lg);border-bottom-left-radius:4px;padding:10px 14px;font-size:13px;line-height:1.6;color:var(--on-surface)}
+.mock-msg.user{justify-content:flex-end}
+.mock-msg.user .mock-bubble{background:var(--primary);color:var(--on-primary);border-radius:var(--radius-lg);border-bottom-right-radius:4px;padding:10px 14px;font-size:13px;line-height:1.6}
+.typing-dots{display:inline-flex;gap:4px;padding:4px 0}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--primary);animation:dotBounce 1.4s infinite both}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-4px)}}
+.mobile-menu-btn{display:none;background:none;border:none;color:var(--on-surface-variant);cursor:pointer;padding:8px;border-radius:var(--radius-full)}
+.mobile-menu-btn:hover{background:var(--surface-container)}
+.mobile-menu-btn svg{width:24px;height:24px}
+@media(max-width:768px){
+  .mobile-menu-btn{display:flex;align-items:center;justify-content:center}
+  .nav-links{position:fixed;top:56px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--outline-variant);flex-direction:column;padding:16px;gap:8px;display:none;box-shadow:var(--shadow-md)}
+  .nav-links.open{display:flex}
+  .nav-link.hide-mobile{display:block!important}
+  .hero-visual-wrap{padding:20px}
+}
+</style>
+</head>
+<body>
+<nav class="nav" id="navbar">
+  <a href="/" class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#6750A4"/><path d="M8 14l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    SmartCS
+  </a>
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="nav-links" id="navLinks">
+    <a href="#features" class="nav-link hide-mobile">Features</a>
+    <a href="#how" class="nav-link hide-mobile">How It Works</a>
+    <a href="#pricing" class="nav-link hide-mobile">Pricing</a>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="location.href='/?lang=en'">EN</button>
+      <button class="lang-btn" onclick="location.href='/?lang=zh'">ZH</button>
+    </div>
+    <a href="/login?lang=en" class="nav-link">Sign In</a>
+    <a href="/register?lang=en" class="btn btn-primary btn-sm nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-badge fade-in">
+      <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" fill="#6750A4"/><circle cx="7" cy="7" r="6" stroke="#6750A4" stroke-width="1" opacity="0.3"/></svg>
+      AI Customer Service Platform
+    </div>
+    <h1 class="hero-title fade-in fade-in-delay-1">Deploy Intelligence.<br>Reduce Costs.</h1>
+    <p class="hero-desc fade-in fade-in-delay-2">Build and deploy AI-powered customer service in minutes. SmartCS combines intelligent chatbots with seamless agent takeover to transform your support experience.</p>
+    <div class="hero-actions fade-in fade-in-delay-3">
+      <a href="/register?lang=en" class="btn btn-primary btn-lg">Start Free Trial</a>
+      <a href="#features" class="btn btn-tonal btn-lg">Learn More</a>
+    </div>
+    <div class="hero-visual-wrap fade-in fade-in-delay-4">
+      <div class="mock-chat">
+        <div class="mock-msg bot">
+          <div class="mock-avatar"><svg viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="5" fill="#E8DEF8"/><path d="M5 8l2 2 4-4" stroke="#6750A4" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="mock-bubble">Hello! Welcome to SmartCS. How can I help you today?</div>
+        </div>
+        <div class="mock-msg user">
+          <div class="mock-bubble">How much does it cost?</div>
+        </div>
+        <div class="mock-msg bot">
+          <div class="mock-avatar"><svg viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="5" fill="#E8DEF8"/><path d="M5 8l2 2 4-4" stroke="#6750A4" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="mock-bubble">We offer 4 plans: Free (CNY0), Basic (CNY299/mo), Professional (CNY999/mo), and Enterprise (CNY2999/mo). Would you like more details?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-surface">
+  <div class="container">
+    <div class="stat-row">
+      <div class="stat-item fade-in"><div class="stat-value">80%</div><div class="stat-label">Cost Reduction</div></div>
+      <div class="stat-item fade-in fade-in-delay-1"><div class="stat-value">5 min</div><div class="stat-label">Deploy Time</div></div>
+      <div class="stat-item fade-in fade-in-delay-2"><div class="stat-value">24/7</div><div class="stat-label">Always Online</div></div>
+      <div class="stat-item fade-in fade-in-delay-3"><div class="stat-value">95%</div><div class="stat-label">Response Accuracy</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:64px">
+      <p class="text-xs text-primary" style="margin-bottom:12px">CAPABILITIES</p>
+      <h2 class="display-lg">Everything You Need</h2>
+      <p class="text-md text-muted" style="margin-top:12px;max-width:480px;margin-left:auto;margin-right:auto">Each feature is crafted for the ultimate experience</p>
+    </div>
+    <div class="grid-3">
+      <div class="feature-card fade-in"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="4"/><line x1="14" y1="4" x2="14" y2="8"/><line x1="14" y1="20" x2="14" y2="24"/><line x1="4" y1="14" x2="8" y2="14"/><line x1="20" y1="14" x2="24" y2="14"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">AI-Powered Responses</h3><p class="text-md text-muted" style="line-height:1.8">Train your knowledge base and let AI handle most inquiries automatically. Natural language understanding provides accurate, context-aware responses.</p></div>
+      <div class="feature-card fade-in fade-in-delay-1"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="3" width="18" height="22" rx="2"/><line x1="9" y1="9" x2="19" y2="9"/><line x1="9" y1="13" x2="19" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">Intelligent Knowledge Base</h3><p class="text-md text-muted" style="line-height:1.8">Import FAQs, documents, and product guides. AI learns from your content and continuously improves response quality over time.</p></div>
+      <div class="feature-card fade-in fade-in-delay-2"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="14" cy="10" r="5"/><path d="M5 24c0-5.5 4-10 9-10s9 4.5 9 10"/><circle cx="22" cy="20" r="4"/><line x1="25" y1="23" x2="27" y2="25"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">Seamless Agent Handover</h3><p class="text-md text-muted" style="line-height:1.8">Complex issues are instantly escalated to human agents with full conversation context. No repeat questions, no frustrated customers.</p></div>
+      <div class="feature-card fade-in"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4,22 10,14 16,18 24,8"/><polyline points="20,8 24,8 24,12"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">Deep Analytics</h3><p class="text-md text-muted" style="line-height:1.8">Track conversation trends, identify knowledge gaps, monitor satisfaction scores. Data-driven insights to continuously improve your service.</p></div>
+      <div class="feature-card fade-in fade-in-delay-1"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 6h18v16H15l-5 4v-4H5V6z"/><line x1="9" y1="11" x2="19" y2="11"/><line x1="9" y1="15" x2="16" y2="15"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">Multi-Channel Widget</h3><p class="text-md text-muted" style="line-height:1.8">Deploy a customizable chat widget on any website. Works on desktop and mobile. One integration, unlimited conversations.</p></div>
+      <div class="feature-card fade-in fade-in-delay-2"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="6" width="16" height="16" rx="2"/><path d="M10 14l3 3 5-6"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">Enterprise Security</h3><p class="text-md text-muted" style="line-height:1.8">Data encrypted at rest and in transit. Multi-tenant isolation. GDPR and CCPA compliant. Your data stays yours.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="section-gradient section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:64px">
+      <p class="text-xs text-primary" style="margin-bottom:12px">GET STARTED</p>
+      <h2 class="display-lg">Up and Running in Minutes</h2>
+      <p class="text-md text-muted" style="margin-top:12px;max-width:480px;margin-left:auto;margin-right:auto">Three steps to begin your journey</p>
+    </div>
+    <div class="grid-3" style="gap:32px">
+      <div class="step-card fade-in"><div class="step-number">1</div><h3>Create Account</h3><p>Register your company and access your dedicated workspace in seconds. No credit card required to start.</p></div>
+      <div class="step-card fade-in fade-in-delay-1"><div class="step-number">2</div><h3>Build Knowledge</h3><p>Upload your FAQs, product docs, and support guides. Add questions and answers manually or import in bulk.</p></div>
+      <div class="step-card fade-in fade-in-delay-2"><div class="step-number">3</div><h3>Deploy Widget</h3><p>Copy one line of code to your website. Your AI customer service is live. Monitor and optimize from your dashboard.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:800px">
+    <div class="testimonial-card fade-in" style="text-align:center">
+      <blockquote class="display-md font-light" style="font-style:italic;line-height:1.6;color:var(--on-surface-variant);margin-bottom:32px">"SmartCS reduced our ticket volume by 73% in the first month. The AI understands context remarkably well and our customers can't tell they're talking to a bot most of the time."</blockquote>
+      <div class="display-sm">Sarah Chen</div>
+      <div class="text-sm text-muted" style="margin-top:4px">Head of Customer Success, TechCorp Asia</div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="section-surface section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:64px">
+      <p class="text-xs text-primary" style="margin-bottom:12px">PRICING</p>
+      <h2 class="display-lg">Simple, Transparent Pricing</h2>
+    </div>
+    <div class="grid-4">
+      <div class="price-card"><span class="tag">Free</span><div class="price"><small>CNY</small>0</div><div class="desc">Perfect for getting started</div><ul><li>1 agent seat</li><li>100 knowledge items</li><li>500 chats/month</li><li>Basic widget</li><li>Email support</li></ul><a href="/register?lang=en" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">Get Started</a></div>
+      <div class="price-card"><span class="tag">Basic</span><div class="price"><small>CNY</small>299</div><div class="desc">For small teams</div><ul><li>3 agent seats</li><li>500 knowledge items</li><li>2,000 chats/month</li><li>Analytics dashboard</li><li>Priority support</li></ul><a href="/register?lang=en" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">Get Started</a></div>
+      <div class="price-card featured"><span class="tag">Professional</span><div class="price"><small>CNY</small>999</div><div class="desc">For growing businesses</div><ul><li>10 agent seats</li><li>2,000 knowledge items</li><li>10,000 chats/month</li><li>Advanced analytics</li><li>Custom branding</li></ul><a href="/register?lang=en" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Get Started</a></div>
+      <div class="price-card"><span class="tag">Enterprise</span><div class="price"><small>CNY</small>2999</div><div class="desc">For large organizations</div><ul><li>50 agent seats</li><li>Unlimited knowledge</li><li>Unlimited chats</li><li>Custom AI training</li><li>API access + SLA</li></ul><a href="/register?lang=en" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">Contact Sales</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta-section">
+      <h2 class="display-lg">Ready to Transform Your Customer Service?</h2>
+      <p>Join hundreds of companies already using SmartCS</p>
+      <a href="/register?lang=en" class="btn btn-lg" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3)">Start Your Free Trial</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-brand"><svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#E8DEF8"/><path d="M6 12l4 4 8-8" stroke="#6750A4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>SmartCS</div><p class="footer-desc">AI-powered customer service platform for modern businesses. Reduce costs, improve satisfaction, scale effortlessly.</p></div>
+      <div><div class="footer-heading">Product</div><ul class="footer-links"><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#how">How It Works</a></li><li><a href="#">Demo</a></li></ul></div>
+      <div><div class="footer-heading">Company</div><ul class="footer-links"><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li></ul></div>
+      <div><div class="footer-heading">Legal</div><ul class="footer-links"><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Security</a></li><li><a href="#">GDPR</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 SmartCS. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('scroll',function(){var n=document.getElementById('navbar');if(window.scrollY>20)n.classList.add('scrolled');else n.classList.remove('scrolled')});
+document.getElementById('mobileMenuBtn').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open')});
+document.querySelectorAll('.nav-link').forEach(function(l){l.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open')})});
+var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.style.animationPlayState='running';observer.unobserve(e.target)}})},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(function(el){el.style.animationPlayState='paused';observer.observe(el)});
+</script>
+<script src="/chat-widget.js" data-tenant="smartcs" data-lang="en"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCS - 订阅管理</title>
+    <link rel="stylesheet" href="/static/luxury.css">
+</head>
+<body>
+    <div class="sidebar-dark">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 36 36" width="36" height="36">
+                <rect width="36" height="36" rx="10" fill="#6750A4"/>
+                <path d="M10 18l6 6 10-12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>SmartCS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/dashboard?lang=zh" class="sidebar-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                仪表盘
+            </a>
+            <a href="/knowledge?lang=zh" class="sidebar-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                知识库
+            </a>
+            <a href="/agent?lang=zh" class="sidebar-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                智能客服
+            </a>
+            <a href="/pricing?lang=zh" class="sidebar-link active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                订阅管理
+            </a>
+            <a href="javascript:void(0)" class="sidebar-link" onclick="logout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                退出登录
+            </a>
+        </nav>
+    </div>
+    <div class="page-body">
+        <div class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">订阅管理</h1>
+            </div>
+            <div class="msg-box" id="msgBox"></div>
+            <div class="grid-4">
+                <div class="price-card" data-plan="free">
+                    <span class="tag">Free</span>
+                    <div class="price">CNY 0<small>/月</small></div>
+                    <p class="desc">适合个人测试</p>
+                    <ul>
+                        <li>1 个智能体</li>
+                        <li>100 条知识</li>
+                        <li>500 次对话/月</li>
+                        <li>基础组件</li>
+                        <li>邮件支持</li>
+                    </ul>
+                    <button class="btn btn-outline btn-sm" onclick="subscribe('free')">当前方案</button>
+                </div>
+                <div class="price-card" data-plan="basic">
+                    <span class="tag">Basic</span>
+                    <div class="price">CNY 299<small>/月</small></div>
+                    <p class="desc">适合小团队</p>
+                    <ul>
+                        <li>3 个智能体</li>
+                        <li>500 条知识</li>
+                        <li>2,000 次对话/月</li>
+                        <li>数据分析</li>
+                        <li>优先支持</li>
+                    </ul>
+                    <button class="btn btn-primary btn-sm" onclick="subscribe('basic')">升级</button>
+                </div>
+                <div class="price-card featured" data-plan="professional">
+                    <span class="tag">Professional</span>
+                    <div class="price">CNY 999<small>/月</small></div>
+                    <p class="desc">适合成长型企业</p>
+                    <ul>
+                        <li>10 个智能体</li>
+                        <li>2,000 条知识</li>
+                        <li>10,000 次对话/月</li>
+                        <li>高级分析</li>
+                        <li>自定义品牌</li>
+                    </ul>
+                    <button class="btn btn-primary btn-sm" onclick="subscribe('professional')">升级</button>
+                </div>
+                <div class="price-card" data-plan="enterprise">
+                    <span class="tag">Enterprise</span>
+                    <div class="price">CNY 2999<small>/月</small></div>
+                    <p class="desc">适合大型组织</p>
+                    <ul>
+                        <li>50 个智能体</li>
+                        <li>无限知识</li>
+                        <li>无限对话</li>
+                        <li>自定义AI训练</li>
+                        <li>API访问 + SLA</li>
+                    </ul>
+                    <button class="btn btn-outline btn-sm" onclick="subscribe('enterprise')">升级</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function logout() {
+            localStorage.removeItem('smartcs_token');
+            localStorage.removeItem('smartcs_tenant');
+            localStorage.removeItem('smartcs_user');
+            window.location.href = '/login?lang=zh';
+        }
+
+        async function api(path, options) {
+            var token = localStorage.getItem('smartcs_token');
+            if (!token) {
+                window.location.href = '/login?lang=zh';
+                return null;
+            }
+            var headers = { 'Authorization': 'Bearer ' + token };
+            if (options && options.headers) {
+                Object.assign(headers, options.headers);
+            }
+            var response = await fetch(path, Object.assign({}, options, { headers: headers }));
+            if (response.status === 401) {
+                window.location.href = '/login?lang=zh';
+                return null;
+            }
+            return response;
+        }
+
+        var planPrices = {
+            free: 0,
+            basic: 299,
+            professional: 999,
+            enterprise: 2999
+        };
+
+        var planLabels = {
+            free: 'Free',
+            basic: 'Basic',
+            professional: 'Professional',
+            enterprise: 'Enterprise'
+        };
+
+        function init() {
+            var token = localStorage.getItem('smartcs_token');
+            if (!token) {
+                window.location.href = '/login?lang=zh';
+                return;
+            }
+            var tenant = localStorage.getItem('smartcs_tenant');
+            var currentPlan = 'free';
+            if (tenant) {
+                try {
+                    var t = JSON.parse(tenant);
+                    currentPlan = (t.plan || 'free').toLowerCase();
+                } catch (e) {}
+            }
+            markCurrentPlan(currentPlan);
+        }
+
+        function markCurrentPlan(currentPlan) {
+            var cards = document.querySelectorAll('.price-card');
+            cards.forEach(function(card) {
+                var plan = card.getAttribute('data-plan');
+                var btn = card.querySelector('.btn');
+                if (plan === currentPlan) {
+                    btn.textContent = '当前方案';
+                    btn.className = 'btn btn-outline btn-sm';
+                    btn.disabled = true;
+                }
+            });
+        }
+
+        function showMsg(text, type) {
+            var box = document.getElementById('msgBox');
+            box.textContent = text;
+            box.className = 'msg-box msg-' + type;
+            box.style.display = 'block';
+        }
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        async function subscribe(targetPlan) {
+            if (targetPlan === 'free') return;
+
+            if (targetPlan === 'enterprise') {
+                showMsg('请联系我们的销售团队获取企业版报价', 'error');
+                return;
+            }
+
+            var price = planPrices[targetPlan];
+            var label = planLabels[targetPlan];
+            if (!confirm('确认订阅' + escapeHtml(label) + '方案，CNY ' + price + '/月？')) return;
+
+            try {
+                var res = await api('/api/subscription/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plan: targetPlan })
+                });
+                if (!res) return;
+                var data = await res.json();
+                if (res.ok) {
+                    var tenant = localStorage.getItem('smartcs_tenant');
+                    if (tenant) {
+                        try {
+                            var t = JSON.parse(tenant);
+                            t.plan = targetPlan;
+                            localStorage.setItem('smartcs_tenant', JSON.stringify(t));
+                        } catch (e) {}
+                    }
+                    showMsg('订阅成功！方案：' + escapeHtml(label) + '，订单号：' + escapeHtml(data.order_id || ''), 'success');
+                    setTimeout(function() { window.location.reload(); }, 2000);
+                } else {
+                    showMsg(data.message || '订阅失败', 'error');
+                }
+            } catch (e) {
+                showMsg('订阅失败', 'error');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

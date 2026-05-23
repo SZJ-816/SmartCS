@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SmartCS - AI智能客服平台</title>
+<link rel="stylesheet" href="/static/luxury.css">
+<style>
+.hero-visual-wrap{position:relative;margin-top:60px;border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-xl);border:1px solid var(--outline-variant);background:var(--surface);padding:40px;min-height:200px}
+.hero-visual-wrap .mock-chat{max-width:420px;margin:0 auto}
+.mock-msg{display:flex;margin-bottom:12px;gap:8px;align-items:flex-start}
+.mock-msg.bot .mock-avatar{width:32px;height:32px;border-radius:var(--radius-full);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mock-msg.bot .mock-avatar svg{width:16px;height:16px;color:var(--primary)}
+.mock-msg.bot .mock-bubble{background:var(--surface-container-low);border:1px solid var(--outline-variant);border-radius:var(--radius-lg);border-bottom-left-radius:4px;padding:10px 14px;font-size:13px;line-height:1.6;color:var(--on-surface)}
+.mock-msg.user{justify-content:flex-end}
+.mock-msg.user .mock-bubble{background:var(--primary);color:var(--on-primary);border-radius:var(--radius-lg);border-bottom-right-radius:4px;padding:10px 14px;font-size:13px;line-height:1.6}
+.mobile-menu-btn{display:none;background:none;border:none;color:var(--on-surface-variant);cursor:pointer;padding:8px;border-radius:var(--radius-full)}
+.mobile-menu-btn:hover{background:var(--surface-container)}
+.mobile-menu-btn svg{width:24px;height:24px}
+@media(max-width:768px){
+  .mobile-menu-btn{display:flex;align-items:center;justify-content:center}
+  .nav-links{position:fixed;top:56px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--outline-variant);flex-direction:column;padding:16px;gap:8px;display:none;box-shadow:var(--shadow-md)}
+  .nav-links.open{display:flex}
+  .nav-link.hide-mobile{display:block!important}
+  .hero-visual-wrap{padding:20px}
+}
+</style>
+</head>
+<body>
+<nav class="nav" id="navbar">
+  <a href="/" class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#6750A4"/><path d="M8 14l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    SmartCS
+  </a>
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="nav-links" id="navLinks">
+    <a href="#features" class="nav-link hide-mobile">功能特性</a>
+    <a href="#how" class="nav-link hide-mobile">使用指南</a>
+    <a href="#pricing" class="nav-link hide-mobile">定价方案</a>
+    <div class="lang-toggle">
+      <button class="lang-btn" onclick="location.href='/?lang=en'">EN</button>
+      <button class="lang-btn active" onclick="location.href='/?lang=zh'">ZH</button>
+    </div>
+    <a href="/login?lang=zh" class="nav-link">登录</a>
+    <a href="/register?lang=zh" class="btn btn-primary btn-sm nav-cta">免费试用</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-badge fade-in">
+      <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" fill="#6750A4"/><circle cx="7" cy="7" r="6" stroke="#6750A4" stroke-width="1" opacity="0.3"/></svg>
+      AI智能客服平台
+    </div>
+    <h1 class="hero-title fade-in fade-in-delay-1">部署智能客服<br>降低运营成本</h1>
+    <p class="hero-desc fade-in fade-in-delay-2">几分钟内构建和部署AI驱动的客户服务。SmartCS结合智能聊天机器人与无缝人工接管，为您打造卓越的客户支持体验。</p>
+    <div class="hero-actions fade-in fade-in-delay-3">
+      <a href="/register?lang=zh" class="btn btn-primary btn-lg">免费试用</a>
+      <a href="#features" class="btn btn-tonal btn-lg">了解更多</a>
+    </div>
+    <div class="hero-visual-wrap fade-in fade-in-delay-4">
+      <div class="mock-chat">
+        <div class="mock-msg bot">
+          <div class="mock-avatar"><svg viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="5" fill="#E8DEF8"/><path d="M5 8l2 2 4-4" stroke="#6750A4" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="mock-bubble">你好！欢迎咨询SmartCS智能客服。请问有什么可以帮您？</div>
+        </div>
+        <div class="mock-msg user">
+          <div class="mock-bubble">你们的产品怎么收费？</div>
+        </div>
+        <div class="mock-msg bot">
+          <div class="mock-avatar"><svg viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="5" fill="#E8DEF8"/><path d="M5 8l2 2 4-4" stroke="#6750A4" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="mock-bubble">我们提供4种方案：免费版(CNY0)、基础版(CNY299/月)、专业版(CNY999/月)、企业版(CNY2999/月)。需要了解详情吗？</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-surface">
+  <div class="container">
+    <div class="stat-row">
+      <div class="stat-item fade-in"><div class="stat-value">80%</div><div class="stat-label">成本降低</div></div>
+      <div class="stat-item fade-in fade-in-delay-1"><div class="stat-value">5分钟</div><div class="stat-label">部署时间</div></div>
+      <div class="stat-item fade-in fade-in-delay-2"><div class="stat-value">24/7</div><div class="stat-label">全天在线</div></div>
+      <div class="stat-item fade-in fade-in-delay-3"><div class="stat-value">95%</div><div class="stat-label">回复准确率</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:64px">
+      <p class="text-xs text-primary" style="margin-bottom:12px">核心功能</p>
+      <h2 class="display-lg">精心打磨的智能工具</h2>
+      <p class="text-md text-muted" style="margin-top:12px;max-width:480px;margin-left:auto;margin-right:auto">每一个功能都为极致体验而生</p>
+    </div>
+    <div class="grid-3">
+      <div class="feature-card fade-in"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="4"/><line x1="14" y1="4" x2="14" y2="8"/><line x1="14" y1="20" x2="14" y2="24"/><line x1="4" y1="14" x2="8" y2="14"/><line x1="20" y1="14" x2="24" y2="14"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">AI智能回复</h3><p class="text-md text-muted" style="line-height:1.8">训练知识库，让AI自动处理大部分咨询。自然语言理解提供精准的上下文感知回复。</p></div>
+      <div class="feature-card fade-in fade-in-delay-1"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="3" width="18" height="22" rx="2"/><line x1="9" y1="9" x2="19" y2="9"/><line x1="9" y1="13" x2="19" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">智能知识库</h3><p class="text-md text-muted" style="line-height:1.8">导入FAQ、文档和产品指南。AI从您的内容中学习，持续提升回复质量。</p></div>
+      <div class="feature-card fade-in fade-in-delay-2"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="14" cy="10" r="5"/><path d="M5 24c0-5.5 4-10 9-10s9 4.5 9 10"/><circle cx="22" cy="20" r="4"/><line x1="25" y1="23" x2="27" y2="25"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">无缝人工接管</h3><p class="text-md text-muted" style="line-height:1.8">复杂问题即时转接人工客服，保留完整对话上下文。无需重复提问，客户体验更佳。</p></div>
+      <div class="feature-card fade-in"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4,22 10,14 16,18 24,8"/><polyline points="20,8 24,8 24,12"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">深度数据分析</h3><p class="text-md text-muted" style="line-height:1.8">追踪对话趋势，识别知识盲区，监控满意度评分。数据驱动持续优化服务质量。</p></div>
+      <div class="feature-card fade-in fade-in-delay-1"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 6h18v16H15l-5 4v-4H5V6z"/><line x1="9" y1="11" x2="19" y2="11"/><line x1="9" y1="15" x2="16" y2="15"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">多渠道组件</h3><p class="text-md text-muted" style="line-height:1.8">在任何网站部署可定制的聊天组件。桌面和移动端完美适配，一次集成，无限对话。</p></div>
+      <div class="feature-card fade-in fade-in-delay-2"><div class="feature-icon"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="6" width="16" height="16" rx="2"/><path d="M10 14l3 3 5-6"/></svg></div><h3 class="display-sm" style="margin-bottom:12px">企业级安全</h3><p class="text-md text-muted" style="line-height:1.8">数据静态和传输加密。多租户隔离。符合GDPR和CCPA标准。您的数据始终属于您。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="section-gradient section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:64px">
+      <p class="text-xs text-primary" style="margin-bottom:12px">快速上手</p>
+      <h2 class="display-lg">三步开启智能客服</h2>
+      <p class="text-md text-muted" style="margin-top:12px;max-width:480px;margin-left:auto;margin-right:auto">简单三步，即刻启用</p>
+    </div>
+    <div class="grid-3" style="gap:32px">
+      <div class="step-card fade-in"><div class="step-number">1</div><h3>创建账号</h3><p>注册您的公司，秒级获取专属工作空间。无需信用卡即可开始使用。</p></div>
+      <div class="step-card fade-in fade-in-delay-1"><div class="step-number">2</div><h3>构建知识库</h3><p>上传FAQ、产品文档和支持指南。支持手动添加或批量导入问答对。</p></div>
+      <div class="step-card fade-in fade-in-delay-2"><div class="step-number">3</div><h3>部署组件</h3><p>复制一行代码到您的网站，AI客服即刻上线。在控制面板中监控和优化。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:800px">
+    <div class="testimonial-card fade-in" style="text-align:center">
+      <blockquote class="display-md font-light" style="font-style:italic;line-height:1.6;color:var(--on-surface-variant);margin-bottom:32px">"SmartCS在第一个月就将我们的工单量减少了73%。AI对上下文的理解能力令人惊叹，大多数时候客户甚至分不清是在和机器人对话。"</blockquote>
+      <div class="display-sm">陈思雅</div>
+      <div class="text-sm text-muted" style="margin-top:4px">TechCorp Asia 客户成功负责人</div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="section-surface section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:64px">
+      <p class="text-xs text-primary" style="margin-bottom:12px">定价方案</p>
+      <h2 class="display-lg">简单透明的定价</h2>
+    </div>
+    <div class="grid-4">
+      <div class="price-card"><span class="tag">免费版</span><div class="price"><small>CNY</small>0</div><div class="desc">适合入门体验</div><ul><li>1个坐席</li><li>100条知识</li><li>500次对话/月</li><li>基础组件</li><li>邮件支持</li></ul><a href="/register?lang=zh" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">立即开始</a></div>
+      <div class="price-card"><span class="tag">基础版</span><div class="price"><small>CNY</small>299</div><div class="desc">适合小团队</div><ul><li>3个坐席</li><li>500条知识</li><li>2,000次对话/月</li><li>数据分析面板</li><li>优先支持</li></ul><a href="/register?lang=zh" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">立即开始</a></div>
+      <div class="price-card featured"><span class="tag">专业版</span><div class="price"><small>CNY</small>999</div><div class="desc">适合成长型企业</div><ul><li>10个坐席</li><li>2,000条知识</li><li>10,000次对话/月</li><li>高级分析</li><li>自定义品牌</li></ul><a href="/register?lang=zh" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">立即开始</a></div>
+      <div class="price-card"><span class="tag">企业版</span><div class="price"><small>CNY</small>2999</div><div class="desc">适合大型组织</div><ul><li>50个坐席</li><li>无限知识</li><li>无限对话</li><li>定制AI训练</li><li>API接入 + SLA</li></ul><a href="/register?lang=zh" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">联系销售</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta-section">
+      <h2 class="display-lg">准备好升级您的客户服务了吗？</h2>
+      <p>加入数百家正在使用SmartCS的企业</p>
+      <a href="/register?lang=zh" class="btn btn-lg" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3)">免费试用</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-brand"><svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#E8DEF8"/><path d="M6 12l4 4 8-8" stroke="#6750A4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>SmartCS</div><p class="footer-desc">面向现代企业的AI智能客服平台。降低成本，提升满意度，轻松扩展。</p></div>
+      <div><div class="footer-heading">产品</div><ul class="footer-links"><li><a href="#features">功能特性</a></li><li><a href="#pricing">定价方案</a></li><li><a href="#how">使用指南</a></li><li><a href="#">演示</a></li></ul></div>
+      <div><div class="footer-heading">公司</div><ul class="footer-links"><li><a href="#">关于我们</a></li><li><a href="#">博客</a></li><li><a href="#">招聘</a></li><li><a href="#">联系我们</a></li></ul></div>
+      <div><div class="footer-heading">法律</div><ul class="footer-links"><li><a href="#">隐私政策</a></li><li><a href="#">服务条款</a></li><li><a href="#">安全</a></li><li><a href="#">GDPR</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 SmartCS. 保留所有权利。</div>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('scroll',function(){var n=document.getElementById('navbar');if(window.scrollY>20)n.classList.add('scrolled');else n.classList.remove('scrolled')});
+document.getElementById('mobileMenuBtn').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open')});
+document.querySelectorAll('.nav-link').forEach(function(l){l.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open')})});
+var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.style.animationPlayState='running';observer.unobserve(e.target)}})},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(function(el){el.style.animationPlayState='paused';observer.observe(el)});
+</script>
+<script src="/chat-widget.js" data-tenant="smartcs" data-lang="zh"></script>
+</body>
+</html>

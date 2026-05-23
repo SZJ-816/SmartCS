@@ -1,0 +1,16 @@
+[Unit]
+Description=SmartCS Gunicorn Application
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=notify
+User=root
+WorkingDirectory=/opt/smartcs/backend
+EnvironmentFile=/opt/smartcs/backend/.env
+ExecStart=/usr/local/bin/gunicorn --workers 3 --bind 0.0.0.0:8080 --timeout 120 --access-logfile /opt/smartcs/access.log --error-logfile /opt/smartcs/error.log "app:app"
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

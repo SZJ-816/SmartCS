@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Agent Chat - SmartCS</title>
+<link rel="stylesheet" href="/static/luxury.css">
+<style>
+.chat-layout{display:grid;grid-template-columns:300px 1fr;gap:20px;height:calc(100vh - 160px)}
+.conv-list{background:var(--surface);border:1px solid var(--outline-variant);border-radius:var(--radius-lg);overflow-y:auto}
+.conv-list-header{padding:16px 20px;border-bottom:1px solid var(--outline-variant);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--on-surface-variant)}
+.conv-item{padding:14px 20px;border-bottom:1px solid var(--outline-variant);cursor:pointer;transition:background 0.15s}
+.conv-item:hover{background:var(--surface-container-low)}
+.conv-item.active{background:var(--primary-light);border-left:3px solid var(--primary)}
+.conv-item .visitor{font-size:14px;font-weight:500}
+.conv-item .meta{font-size:11px;color:var(--on-surface-variant);margin-top:4px;display:flex;justify-content:space-between}
+.conv-item .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.status-bot{background:var(--primary)}
+.status-waiting{background:#f59e0b}
+.status-agent{background:#22c55e}
+.status-closed{background:var(--outline)}
+.chat-panel{background:var(--surface);border:1px solid var(--outline-variant);border-radius:var(--radius-lg);display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:16px 20px;border-bottom:1px solid var(--outline-variant);display:flex;justify-content:space-between;align-items:center}
+.chat-header h3{font-size:14px;font-weight:600}
+.chat-messages{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.chat-msg{max-width:72%;padding:12px 16px;font-size:14px;line-height:1.6;border-radius:var(--radius-lg)}
+.chat-msg.visitor{background:var(--surface-container-low);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.bot{background:var(--primary-light);color:var(--on-primary-container);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.agent{background:var(--primary);color:var(--on-primary);align-self:flex-end;border-bottom-right-radius:4px}
+.chat-msg .time{font-size:11px;opacity:0.5;margin-top:6px;display:block}
+.chat-input-area{padding:16px 20px;border-top:1px solid var(--outline-variant);display:flex;gap:12px}
+.chat-input-area input{flex:1}
+.empty-chat{flex:1;display:flex;align-items:center;justify-content:center;color:var(--on-surface-variant);font-size:14px}
+@media(max-width:768px){.chat-layout{grid-template-columns:1fr;height:calc(100vh - 200px)}.conv-list{max-height:200px}}
+</style>
+</head>
+<body>
+<div style="display:flex;min-height:100vh">
+<aside class="sidebar-dark">
+<div class="sidebar-logo">
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#6750A4"/><path d="M9 16l4 4 10-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span>SmartCS</span>
+</div>
+<nav class="sidebar-nav">
+<a href="/dashboard?lang=en" class="sidebar-link">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+Dashboard
+</a>
+<a href="/knowledge?lang=en" class="sidebar-link">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+Knowledge
+</a>
+<a href="/agent?lang=en" class="sidebar-link active">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+Agent Chat
+</a>
+<a href="/pricing?lang=en" class="sidebar-link">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+Subscription
+</a>
+<a href="#" class="sidebar-link" onclick="logout();return false">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+Sign Out
+</a>
+</nav>
+</aside>
+<main class="main-content">
+<div class="page-header">
+<h1 class="page-title">Agent Chat</h1>
+</div>
+<div class="chat-layout">
+<div class="conv-list">
+<div class="conv-list-header">Conversations</div>
+<div id="convList"></div>
+</div>
+<div class="chat-panel" id="chatPanel">
+<div class="empty-chat" id="emptyChat">Select a conversation from the left</div>
+<div id="chatContent" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+<div class="chat-header">
+<h3 id="chatTitle">Select a conversation</h3>
+<button class="btn btn-outline btn-sm" id="closeBtn" onclick="closeConv()">Close Chat</button>
+</div>
+<div class="chat-messages" id="chatMessages"></div>
+<div class="chat-input-area">
+<input class="form-input" id="msgInput" type="text" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendMsg()">
+<button class="btn btn-primary" onclick="sendMsg()">Send</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+const TOKEN_KEY='smartcs_token';
+function getToken(){return localStorage.getItem(TOKEN_KEY)}
+function logout(){localStorage.removeItem('smartcs_token');localStorage.removeItem('smartcs_tenant');localStorage.removeItem('smartcs_user');location.href='/login?lang=en'}
+async function api(path,opts={}){
+const token=getToken();
+if(!token){logout();return null}
+const headers={'Authorization':'Bearer '+token};
+if(opts.body)headers['Content-Type']='application/json';
+try{
+const r=await fetch(path,{...opts,headers:{...headers,...(opts.headers||{})}});
+if(r.status===401){logout();return null}
+return r;
+}catch(e){console.error(e);return null}
+}
+let currentCid=null;
+let refreshTimer=null;
+const statusMap={bot:'status-bot',waiting:'status-waiting',agent:'status-agent',closed:'status-closed'};
+const statusLabel={bot:'Bot',waiting:'Waiting',agent:'Agent',closed:'Closed'};
+async function loadConvs(){
+const r=await api('/api/agent/conversations');
+if(!r)return;
+const convs=await r.json();
+const el=document.getElementById('convList');
+if(!convs||convs.length===0){
+el.innerHTML='<div class="empty-chat" style="padding:40px 20px;text-align:center">No active conversations</div>';
+return;
+}
+el.innerHTML=convs.map(c=>{
+const cls='conv-item'+(c.id===currentCid?' active':'');
+const dot=statusMap[c.status]||'status-closed';
+return '<div class="'+cls+'" onclick="selectConv(\''+c.id+'\')">'
++'<div class="visitor"><span class="status-dot '+dot+'"></span>'+esc(c.visitor||c.id)+'</div>'
++'<div class="meta"><span>'+esc(statusLabel[c.status]||c.status)+'</span><span>'+esc(c.updated_at||'')+'</span></div>'
++'</div>';
+}).join('');
+}
+function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+async function selectConv(cid){
+currentCid=cid;
+document.getElementById('emptyChat').style.display='none';
+const cc=document.getElementById('chatContent');
+cc.style.display='flex';
+const r=await api('/api/chat/messages/'+cid);
+if(!r)return;
+const msgs=await r.json();
+const el=document.getElementById('chatMessages');
+if(!msgs||msgs.length===0){
+el.innerHTML='<div class="empty-chat">No messages yet</div>';
+}else{
+el.innerHTML=msgs.map(m=>{
+return '<div class="chat-msg '+m.role+'">'+esc(m.content)+'<span class="time">'+esc(m.created_at||'')+'</span></div>';
+}).join('');
+}
+el.scrollTop=el.scrollHeight;
+document.getElementById('chatTitle').textContent='Conversation: '+cid;
+document.getElementById('closeBtn').style.display=(msgs&&msgs.length&&msgs[0].status==='closed')?'none':'';
+loadConvs();
+}
+async function sendMsg(){
+const input=document.getElementById('msgInput');
+const msg=input.value.trim();
+if(!msg||!currentCid)return;
+input.value='';
+const r=await api('/api/agent/reply',{method:'POST',body:JSON.stringify({conversation_id:currentCid,message:msg})});
+if(r)selectConv(currentCid);
+}
+async function closeConv(){
+if(!currentCid)return;
+var ratingHtml='<div id="ratingBar" style="padding:12px 20px;border-top:1px solid var(--outline-variant);text-align:center;font-size:13px">'
++'<span style="margin-right:8px">Rate this conversation:</span>'
++'<button class="btn btn-outline btn-sm" onclick="submitClose(1)" style="margin:0 2px">1</button>'
++'<button class="btn btn-outline btn-sm" onclick="submitClose(2)" style="margin:0 2px">2</button>'
++'<button class="btn btn-outline btn-sm" onclick="submitClose(3)" style="margin:0 2px">3</button>'
++'<button class="btn btn-outline btn-sm" onclick="submitClose(4)" style="margin:0 2px">4</button>'
++'<button class="btn btn-outline btn-sm" onclick="submitClose(5)" style="margin:0 2px">5</button>'
++'<button class="btn btn-outline btn-sm" onclick="submitClose(0)" style="margin-left:12px">Skip</button>'
++'</div>';
+var existing=document.getElementById('ratingBar');
+if(existing){existing.remove();return}
+document.getElementById('chatContent').insertAdjacentHTML('beforeend',ratingHtml);
+}
+async function submitClose(rating){
+var rb=document.getElementById('ratingBar');if(rb)rb.remove();
+var body=rating>0?JSON.stringify({rating:rating}):undefined;
+var opts={method:'POST'};
+if(body){opts.body=body;opts.headers={'Content-Type':'application/json'}}
+var r=await api('/api/agent/close/'+currentCid,opts);
+if(r)selectConv(currentCid);
+}
+(function init(){
+const token=getToken();
+if(!token){logout();return}
+loadConvs();
+refreshTimer=setInterval(loadConvs,5000);
+})();
+</script>
+</body>
+</html>
